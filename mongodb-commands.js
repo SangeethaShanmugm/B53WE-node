@@ -119,3 +119,194 @@ db.products.find({ rating: { $gt: 4.5 } }).sort({ rating: -1 }).limit(2).pretty(
 //skip
 db.products.find({ rating: { $gt: 4.5 } }).sort({ rating: -1 }).limit(2).skip(1).pretty()
 
+//find the iphone 15
+
+
+db.products.findOne({ name: "iPhone 15 (128 GB)" })
+
+//find => name: include, rating: include, sort => rating =>desc, name =asc
+
+db.products.find({}, { name: 1, rating: 1 }).sort({ rating: -1, name: 1 }).pretty()
+
+db.products.find({}, { name: 1, rating: 1 }).sort({ rating: -1 }).pretty()
+
+//aggregation 
+
+db.orders.insertMany([
+    { _id: 0, productName: "Steel Beam", status: "new", quantity: 10 },
+    { _id: 1, productName: "Steel Beam", status: "urgent", quantity: 20 },
+    { _id: 2, productName: "Steel Beam", status: "urgent", quantity: 30 },
+    { _id: 3, productName: "Iron Rod", status: "new", quantity: 15 },
+    { _id: 4, productName: "Iron Rod", status: "urgent", quantity: 50 },
+    { _id: 5, productName: "Iron Rod", status: "urgent", quantity: 10 },
+])
+
+
+db.orders.find().pretty()
+
+//match urgent products
+//select sum(quantity) from orders where  status= "urgent"
+
+//group based on productName and sum its quantity
+// group by productName
+
+
+//stage - 1
+db.orders.aggregate([{ $match: { status: "urgent" } }])
+
+
+//stage-2
+
+//aggregation pipepline
+db.orders.aggregate([
+    //stage-1 => match urgent products
+    { $match: { status: "urgent" } },
+    //stage-2 => group based on productName and sum its quantity
+    { $group: { _id: "$productName", totalUrgentQuantity: { $sum: "$quantity" } } }
+])
+
+
+//update category: "electronics"
+
+db.products.updateMany({}, { $set: { category: "electronics" } })
+
+// update category: "laptop" for "Samsung Galaxy Book2 Pro 360 Intel 12th Gen i7 EvoTM 33.78 cm (13.3)"
+
+db.products.updateOne({ "name": "Samsung Galaxy Book2 Pro 360 Intel 12th Gen i7 EvoTM 33.78 cm (13.3)" }, { $set: { category: "laptop" } })
+
+db.products.findOne({ "name": "Samsung Galaxy Book2 Pro 360 Intel 12th Gen i7 EvoTM 33.78 cm (13.3)" })
+
+
+
+// update category: "accessories" for "SAMSUNG Galaxy Buds2 Pro True Wireless Bluetooth Earbud Headphones - White"
+
+db.products.updateOne({ "name": "SAMSUNG Galaxy Buds2 Pro True Wireless Bluetooth Earbud Headphones - White" }, { $set: { category: "accessories" } })
+
+
+db.products.findOne({ "name": "SAMSUNG Galaxy Buds2 Pro True Wireless Bluetooth Earbud Headphones - White" })
+
+
+// update category: "accessories" for "Samsung Galaxy Watch5 Bluetooth (44 mm, Sapphire, Compatible with Android only)"
+
+
+//find all products with name containing the word "Samsung"
+
+db.products.find({ name: { $regex: /Samsung/ } }).pretty()
+
+db.products.find({ name: { $regex: /Samsung/i } }).pretty()
+
+
+//delete all products with rating > 4.9
+
+db.products.find({ rating: { $gt: 4.9 } }).pretty()
+
+
+db.products.deleteMany({ rating: { $gt: 4.9 } })
+
+
+
+db.products.find({ rating: { $gt: 4.5 } }).pretty()
+
+
+db.products.deleteOne({ rating: { $gt: 4.5 } })
+
+
+//basic cursor methods =>map, toArray, pretty, forEach, limit, sort, count
+
+//cursor => pointer
+
+var myCursor = db.orders.find({ _id: 5 }).pretty()
+
+
+//orders with productName => Steel Beam
+
+var myCursor = db.orders.find({ productName: "Steel Beam" }).pretty()
+
+
+
+var myCursor = db.orders.find().pretty()
+
+
+//next()
+
+var myCursor = db.orders.find({ _id: { $gt: 3 } }).pretty()
+
+while (myCursor.hasNext()) {
+    print(tojson(myCursor.next()))
+}
+
+
+//forEach
+
+
+var myCursor = db.orders.find({ _id: { $gt: 3 } }).pretty()
+myCursor.forEach(printjson)
+
+
+var myCursor = db.orders.find()
+
+myCursor.forEach(function (product) {
+    print(`Product Name: ${product.productName}, Quantity: ${product.quantity}`)
+})
+
+
+//count 
+
+db.orders.find().count()
+
+//toArray
+
+
+var allOrders = db.orders.find()
+
+var allOrders = db.orders.find().toArray()
+
+//map
+
+
+var listProducts = db.orders.find().limit(2).map(function (data) {
+    return data.productName
+})
+
+
+
+var listProducts = db.orders.find().map(function (data) {
+    return data.quantity * 100
+})
+
+
+//lookups
+
+
+db.order.insertMany([
+    { "_id": 1, "item": "almonds", "price": 12, "quantity": 2 },
+    { "_id": 2, "item": "pecans", "price": 20, "quantity": 1 },
+    { "_id": 3 }
+])
+
+
+db.inventory.insertMany([
+    { "_id": 1, "sku": "almonds", "description": "product 1", "instock": 120 },
+    { "_id": 2, "sku": "bread", "description": "product 2", "instock": 80 },
+    { "_id": 3, "sku": "cashews", "description": "product 3", "instock": 60 },
+    { "_id": 4, "sku": "pecans", "description": "product 4", "instock": 70 },
+    { "_id": 5, "sku": null, "description": "Incomplete" },
+    { "_id": 6 }
+])
+
+
+
+db.order.aggregate([
+    {
+        $lookup:
+        {
+            from: "inventory",
+            localField: "item",
+            foreignField: "sku",
+            as: "inventory_docs"
+        }
+    }
+])
+
+
+
