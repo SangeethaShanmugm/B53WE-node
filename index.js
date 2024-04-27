@@ -120,6 +120,12 @@ app.get('/', (req, res) => {
     res.send('Hello Everyone')
 })
 
+
+// /products => get all products ✅
+// /products?category=laptop => filter based on category ✅
+// /products?rating=5  => filter based on rating
+// /products?category=laptop&rating=5  =>  filter based on category and then rating
+
 app.get('/products', async (req, res) => {
     const { category } = req.query
     console.log(req.query, category)
