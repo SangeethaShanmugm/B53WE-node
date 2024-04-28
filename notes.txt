@@ -22,3 +22,15 @@ avg
 
 
 
+ let filteredProducts = products//copy by reference - same address
+        //filter based on category
+
+        if (category) {
+            filteredProducts = filteredProducts.filter((pd) => pd.category === category)
+        }
+        if (rating) {
+            filteredProducts = filteredProducts.filter((pd) => pd.rating == +rating)
+        }
+        if (filteredProducts.length > 0) {
+            res.send(filteredProducts)
+        }
