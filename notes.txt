@@ -34,3 +34,12 @@ avg
         if (filteredProducts.length > 0) {
             res.send(filteredProducts)
         }
+
+
+
+
+        
+// /products => get all products ✅
+// /products?category=laptop => filter based on category ✅
+// /products?rating=5  => filter based on rating ✅
+// /products?category=laptop&rating=5  =>  filter based on category and then rating ✅
