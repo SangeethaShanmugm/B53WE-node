@@ -2,6 +2,7 @@
 // const { MongoClient } = require('mongodb');
 import express from "express"
 import { MongoClient } from "mongodb"
+import cors from "cors"
 import * as dotenv from 'dotenv'
 dotenv.config()
 import { productsRouter } from "./routes/products.js"
@@ -10,7 +11,7 @@ const PORT = 5000
 
 //Inbuilt middleware =>  say data is in json => converting body to json
 app.use(express.json())
-
+app.use(cors())
 // console.log(process.env.MONGO_URL)
 
 //mongo connection 
