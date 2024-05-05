@@ -1,5 +1,6 @@
 import { getAllProducts, getProductById, addProducts, deleteProductById, updateProductById } from "../helper.js";
 import express from "express"
+import { auth } from "../middleware/auth.js"
 const router = express.Router()
 
 router.get('/', async (req, res) => {
